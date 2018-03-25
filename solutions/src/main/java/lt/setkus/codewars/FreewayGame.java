@@ -10,14 +10,24 @@ public class FreewayGame {
 
     public static int freewayGame(double distanceInKm, double speedKph, double[][] otherCars) {
         System.out.println("My distance " + distanceInKm + ", speed " + speedKph);
-        double myMinutesToExit = calculateTimeWhenWillExit(distanceInKm, speedKph) / 60;
+        System.out.println(Arrays.deepToString(otherCars));
+        double myMinutesToExit = round(calculateTimeWhenWillExit(distanceInKm, speedKph) / 60);
         System.out.println("My car time " + myMinutesToExit);
         return Stream.of(otherCars)
-                .peek(data -> System.out.println(Arrays.toString(data)))
                 .filter(data -> speedKph != data[1] && canCarOvertakeMe(data, speedKph))
-                .peek(d -> System.out.println(Arrays.toString(d)))
+                .map(data -> {
+                    // round to precision of 2
+                    double[] roundedData = new double[2];
+                    roundedData[0] = round(data[0]);
+                    roundedData[1] = round(data[1]);
+                    return roundedData;
+                })
+                .peek(d -> System.out.println("After filter: " + Arrays.toString(d)))
                 .mapToInt(data -> {
-                    double otherCarTime = (calculateTimeWhenWillExit(distanceInKm, data[1]) / 60) + data[0];
+                    // 1) treat that every car entered the freeway together with you at the same time
+                    // 2) then you calculate time time which they need to travel the distance by their speed
+                    // 3) adjust time by adding or they relative which was provided in array
+                    double otherCarTime = round((calculateTimeWhenWillExit(distanceInKm, data[1]) / 60) + data[0]);
                     System.out.println("Other car time " + otherCarTime);
                     if (otherCarTime < myMinutesToExit) {
                         return -1;
@@ -86,5 +96,15 @@ public class FreewayGame {
      */
     private static double convertToMps(double kph) {
         return kph / 3.6;
+    }
+
+    /**
+     * Round double to hundreds.
+     *
+     * @param source double input to round
+     * @return rouded double
+     */
+    private static double round(double source) {
+        return Math.round(source * 100.0) / 100.0;
     }
 }
