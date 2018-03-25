@@ -1,12 +1,6 @@
 package lt.setkus.codewars;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.DoublePredicate;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
@@ -15,41 +9,35 @@ import java.util.stream.Stream;
 public class FreewayGame {
 
     public static int freewayGame(double distanceInKm, double speedKph, double[][] otherCars) {
-        double minutesToExit = calculateTimeWhenWillExit(distanceInKm, speedKph) / 60;
-        List<Double> otherCarDistanceAccordingTheirSpeed =
-                calculateOtherCarsDistanceWhichTheyCanRunBySpeed(speedKph, otherCars, minutesToExit);
-
-        int counter = 0;
-        for (double otherCarDistance : otherCarDistanceAccordingTheirSpeed) {
-            if (otherCarDistance < distanceInKm) {
-                counter++;
-            } else {
-                counter--;
-            }
-        }
-
-        return counter;
+        System.out.println("My distance " + distanceInKm + ", speed " + speedKph);
+        double myMinutesToExit = calculateTimeWhenWillExit(distanceInKm, speedKph) / 60;
+        System.out.println("My car time " + myMinutesToExit);
+        return Stream.of(otherCars)
+                .peek(data -> System.out.println(Arrays.toString(data)))
+                .filter(data -> speedKph != data[1] && canCarOvertakeMe(data, speedKph))
+                .peek(d -> System.out.println(Arrays.toString(d)))
+                .mapToInt(data -> {
+                    double otherCarTime = (calculateTimeWhenWillExit(distanceInKm, data[1]) / 60) + data[0];
+                    System.out.println("Other car time " + otherCarTime);
+                    if (otherCarTime < myMinutesToExit) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                })
+                .sum();
     }
 
-    private static List<Double> calculateOtherCarsDistanceWhichTheyCanRunBySpeed(double speedKph, double[][] otherCars,
-                                                                                 double minutesToExit) {
-        List<Double> otherCarDistanceAccordingTheirSpeed = new ArrayList<>();
-
-        for (double[] data : otherCars) {
-            double timeWhenPassEntry = data[0];
-            double otherCarSpeedKph = data[1];
-
-            if (isCarAheadAndGoingFaster(timeWhenPassEntry, otherCarSpeedKph, speedKph) ||
-                    isCarBehindAndGoingSlower(timeWhenPassEntry, otherCarSpeedKph, speedKph)) {
-                continue;
-            }
-
-            double relativeTimeFromMeToExit = minutesToExit + timeWhenPassEntry;
-
-            double otherCarDistance = convertToMps(otherCarSpeedKph) * (relativeTimeFromMeToExit * 60);
-            otherCarDistanceAccordingTheirSpeed.add(otherCarDistance / 1000);
-        }
-        return otherCarDistanceAccordingTheirSpeed;
+    /**
+     * Check whether car can overtake me.
+     *
+     * @param data car data
+     * @param speedKph my speed
+     * @return result
+     */
+    private static boolean canCarOvertakeMe(double[] data, double speedKph) {
+        return !(isCarAheadAndGoingFaster(data[0], data[1], speedKph) ||
+                isCarBehindAndGoingSlower(data[0], data[1], speedKph));
     }
 
     /**

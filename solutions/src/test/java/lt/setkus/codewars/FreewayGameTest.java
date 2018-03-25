@@ -41,4 +41,32 @@ public class FreewayGameTest {
         assertEquals(0, count);
     }
 
+    @Test
+    public void randomFew() {
+        final int count = FreewayGame.freewayGame(50.0, 130, new double[][]{
+                {-1.9026147506714364, 121.87501793897707},
+                {3.4233274804454155, 124.6059854966885},
+                {2.070946870704061, 110.87104296270967},
+                {-4.28920957127848, 114.47880300629306},
+                {-4.624741939927466, 121.84264286008347}
+        });
+        assertEquals(0, count);
+    }
+
+    @Test
+    public void besideMeAllTheWay() {
+        final int count = FreewayGame.freewayGame(50, 110, new double[][]{{0.0, 110.0}});
+        assertEquals(0, count);
+    }
+
+    @Test
+    public void allSameSpeedAsMe() {
+        final int count = FreewayGame.freewayGame(50.0, 110.0, new double[][]{
+                {-1.0, 110.0},
+                {0.5, 110.0},
+                {1.0, 110.0},
+                {1.5, 110.0}
+        });
+        assertEquals(0, count);
+    }
 }
