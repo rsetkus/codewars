@@ -1,14 +1,18 @@
 package lt.setkus.codewars;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
  * https://www.codewars.com/kata/graph-operations-part-1-find-neighbours-of-a-vertex
+ * https://www.codewars.com/kata/graph-operations-part-2-your-distance-from-a-colleague
  */
 public class GraphOperations {
+    private static final int PATH_DOES_NOT_EXIST = -1;
+
     public static Set<Vertex> getNeighbours(Graph exampleGraph, Vertex vertex) {
-        Set<Vertex> neighbours = new HashSet();
+        Set<Vertex> neighbours = new HashSet<>();
         for (Edge edge : exampleGraph.getEdges()) {
             if (edge.getV1().equals(vertex)) {
                 neighbours.add(edge.getV2());
@@ -20,6 +24,22 @@ public class GraphOperations {
         }
 
         return neighbours;
+    }
+
+    public static int hopDistance(Graph graph, Vertex source, Vertex target) {
+        int distance = 0;
+        Iterator<Vertex> neighboursIterator = getNeighbours(graph, source).iterator();
+        while (neighboursIterator.hasNext()) {
+            distance++;
+            Vertex currentVertex = neighboursIterator.next();
+            if (currentVertex.equals(target)) {
+                return distance;
+            } else {
+                neighboursIterator.remove();
+            }
+        }
+
+        return PATH_DOES_NOT_EXIST;
     }
 }
 

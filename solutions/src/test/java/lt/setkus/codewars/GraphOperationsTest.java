@@ -56,4 +56,11 @@ public class GraphOperationsTest {
         actualNeighbours = GraphOperations.getNeighbours(exampleGraph, V[5]);
         assertEquals(0, actualNeighbours.size());
     }
+
+    @Test
+    public void testHopDistanceExample(){
+        assertEquals(1, GraphOperations.hopDistance(exampleGraph, V[0], V[1]));
+        assertEquals(3, GraphOperations.hopDistance(exampleGraph, V[2], V[4]));
+        assertEquals(3, GraphOperations.hopDistance(exampleGraph, V[4], V[2]));
+    }
 }
